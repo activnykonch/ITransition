@@ -12,16 +12,19 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Components.Forms;
+using System.Runtime.InteropServices;
 
 namespace WebApp.Controllers
 {
     public class UsersController : Controller
     {
         UserManager<ApplicationUser> _userManager;
+        SignInManager<ApplicationUser> _signInManager;
 
-        public UsersController(UserManager<ApplicationUser> userManager)
+        public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [Authorize]
@@ -47,6 +50,11 @@ namespace WebApp.Controllers
             if (user != null)
             {
                 IdentityResult result = await _userManager.DeleteAsync(user);
+                if(result.Succeeded)
+                {
+                    await _signInManager.SignOutAsync();
+                    return RedirectToAction("Index");
+                }
             }
             return RedirectToAction("Index");
         }
@@ -54,15 +62,16 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Block()
         {
-            var users = _userManager.Users;
+            var users = _signInManager.UserManager.Users;
             foreach (var user in users)
             {
                 if (user != null)
                 {
                     if (user.IsBlocked)
                     {
+                        user.AccessFailedCount = 6;
                         user.LockoutEnd = DateTime.Now.AddYears(100);
-                        IdentityResult result = await _userManager.UpdateAsync(user);
+                        await _userManager.AccessFailedAsync(user);
                     }
                 }
             }

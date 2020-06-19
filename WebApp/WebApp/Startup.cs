@@ -46,7 +46,7 @@ namespace WebApp
 
                 options.Lockout.AllowedForNewUsers = true;
                 options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(1000);
 
                 options.User.RequireUniqueEmail = false;
             });
@@ -57,6 +57,7 @@ namespace WebApp
 
                 options.LoginPath = "/Identity/Account/Login";
                 options.SlidingExpiration = true;
+                options.LogoutPath = "/Identity/Account/Logout";
             });
         }
 
