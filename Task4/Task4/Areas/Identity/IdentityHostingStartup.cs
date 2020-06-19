@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Task4.Data;
+using Task4.Models;
 
 [assembly: HostingStartup(typeof(Task4.Areas.Identity.IdentityHostingStartup))]
 namespace Task4.Areas.Identity

@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IEnumerable<Microsoft.AspNetCore.Components.Forms.InputCheckbox> IdList
+
+@{
+    ViewData["Title"] = "Database";
+}
+
+<title>@ViewData["Title"]</title>
+
+<script type="text/javascript">
+    function check(field, flag) {
+        for (i = 0; i < field.length; ++i) {
+            field[i].checked = flag;
+        }
+    }
+</script>
+
+<form method="post">
+    <input class="btn btn-sm" type="button" value="Select all" onclick="check(IdList, 1)">
+    <input class="btn btn-sm" type="button" value="Remove all selects" onclick="check(IdList, 0)">
+    <table class="table">
+        <tr><th></th><th>Id</th><th>Name</th><th>Email</th><th>Last login</th><th>Register date</th><th>Status</th></tr>
+        @foreach (var user in UserManager.Users)
+        {
+            <tr>
+                <td>
+                    <input name="IdList" type="checkbox" value="@user.Id" />
+                </td>
+                <td>@user.Id</td>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@user.LastLoginDate</td>
+                <td>@user.RegisterDate</td>
+                <td>
+                    @if (await UserManager.IsInRoleAsync(user, "Blocked"))
+                    {
+                        <span>Blocked</span>
+                    }
+                    else
+                    {
+                        <span>Valid</span>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+    <nav class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" style="background-color: #fff;">
+        <button asp-action="Delete" type="submit" class="btn btn-danger" asp-controller="Users">
+            Delete
+        </button>
+        <button asp-action="Block" type="submit" class="btn btn-block" asp-controller="Users">
+            Block
+        </button>
+        <button asp-action="Unblock" type="submit" class="btn btn-sm" asp-controller="Users">
+            Unblock
+        </button>
+    </nav>
+</form>
+
+
+
+
